@@ -66,6 +66,7 @@ class  MC_TreeSearcher:
         self.__dictPos = {}
         self.__dictPos[self.__currNode.Pos] = self.__currNode
         self.__lastMoveStrate = np.zeros(7)
+        self.__flagForcedWin = False
 
     def __initChild(self, node: Node):
         if node.flagInitChild:
@@ -132,7 +133,7 @@ class  MC_TreeSearcher:
         
         self.__initChild(node)
         validMoves = node.Pos.getValidMoves()
-
+        
         candidate = []
         bestIndex = -1.0
         for move in validMoves:
@@ -142,18 +143,6 @@ class  MC_TreeSearcher:
                 return node.Pos.CurPlayer
             if self.__checkWinBruteForce( child, 3-node.Pos.CurPlayer, 1):
                 continue
-
-            
-            """
-            if child.P1_win or child.P2_win:
-                if child.P1_win and node.Pos.CurPlayer == 1:
-                    self.__Nodeupdate( node, 1)
-                    return 1
-                if child.P2_win and node.Pos.CurPlayer == 2:
-                    self.__Nodeupdate( node, 1)
-                    return 2
-                continue
-            """
             score = child.UCB(node.Visit)
             if score - bestIndex >= 1e-5:
                 candidate = [move]
@@ -174,6 +163,7 @@ class  MC_TreeSearcher:
             if self.__checkWinBruteForce(self.__currNode.getChild(move), self.__player, self.__deepBruteForce):
                 self.__lastMoveStrate = np.zeros(7)
                 self.__lastMoveStrate[move.col] = 1
+                self.__flagForcedWin = True
                 if flagPrint:
                     print(f'Guaranteed win with move {move}')
                 return move
@@ -194,13 +184,14 @@ class  MC_TreeSearcher:
                 bestN = child.Visit
             elif child.Visit == bestN:
                 candidate.append(move)
+        
         if flagPrint:
             print('\n')
-        if  np.all( self.__lastMoveStrate == 0):
-            for move in validMoves:
-                child = self.__currNode.getChild(move)
-                N = child.Visit
-                self.__lastMoveStrate[move.col] = N / Sum
+        
+        for move in validMoves:
+            child = self.__currNode.getChild(move)
+            N = child.Visit
+            self.__lastMoveStrate[move.col] = N / Sum
 
         return random.choice(candidate)
     
@@ -223,6 +214,21 @@ class  MC_TreeSearcher:
             else:
                 raise ValueError("Invalid move")
     
+    def makeMoveWithStrate(self, flagPrint = True ):
+        self.__initChild(self.__currNode)
+        _ = self.searchBestMove( flagPrint= flagPrint)
+        validMoves = self.__currNode.Pos.getValidMoves()
+        candidates = []
+        p = []
+        for move in validMoves:
+            candidates.append( move )
+            p.append( self.__lastMoveStrate[ move.col] )
+
+        move = random.choice( candidates, p = p )
+
+        self.__currNode = self.__currNode.getChild(move)
+        return move, self.__lastMoveStrate
+    
     @property
     def npArrayPos (self):
         return self.__currNode.Pos.toNpArray()
@@ -242,3 +248,8 @@ class  MC_TreeSearcher:
     @property
     def quantPos(self):
         return len(self.__dictPos)
+    
+    @property
+    def forcedWin(self):
+        return self.__flagForcedWin
+    

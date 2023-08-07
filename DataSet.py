@@ -16,8 +16,9 @@ class DataObj:
 
 class DataSet:
     def __init__(self) :
-        self.Set = {}
-
+        self.__Set = {}
+        self.X = None
+        self.Y = None
     
     def add(self, pos: Game, moveStrate, res: int):
         """
@@ -25,19 +26,17 @@ class DataSet:
         res = 0: draw
         res = -1: loss
         """
-        tempDataObj = self.Set.get( pos, None )
+        tempDataObj = self.__Set.get( pos, None )
         if tempDataObj is None:
             newDataObj = DataObj( res, moveStrate )
-            self.Set[pos] = newDataObj
-            print(0)
+            self.__Set[pos] = newDataObj
         else:
             tempDataObj.update( moveStrate, res)
-            print(1)
         
     
     def BuildDataSet( self):
         X, Y = [], []
-        for pos, data in self.Set.items():
+        for pos, data in self.__Set.items():
             X.append(  pos.toNpArray() )
             Y.append( ( data.res,  data.moveStrate  ) )
         self.X = X
@@ -46,6 +45,10 @@ class DataSet:
     def save(self,  filename ):
         with open(filename, "wb") as output:
             pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
+
+    @property
+    def len(self):
+        return len(self.__Set)
     
 
 

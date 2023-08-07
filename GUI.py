@@ -21,8 +21,8 @@ myfont = pygame.font.Font( None, 75)
 
 screen = pygame.display.set_mode(size)
 
-humanPlayer = 1
-Bot =  MC_TreeSearcher(3-humanPlayer, 5, 1, seed = 26)
+humanPlayer = 2
+Bot =  MC_TreeSearcher(3-humanPlayer, 20, 2, seed = 26)
 
 def draw_board():
     for c in range(7):

@@ -10,5 +10,7 @@ with open("dataSet.pkl", "rb") as f:
     Set = pickle.load(f)
 
 
-print( Set.X[1] )
-print( Set.Y[2] )
+print( Set.X[4] )
+print( Set.Y[4] )
+
+print( Set.len )

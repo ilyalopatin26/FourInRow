@@ -3,6 +3,8 @@ from  FourInRow import Game
 from MC_TreeSearch import MC_TreeSearcher
 from   DataSet import DataSet
 
+from copy import deepcopy
+
 
 def playGame(seed, rollout , depth) :
 
@@ -17,49 +19,50 @@ def playGame(seed, rollout , depth) :
         move = None
         strate = None
         if current_player == 1:
-            move = Bot1.MakeGameMove( flagPrint = False)
-            strate = Bot1.lastMoveStrate
+            move, strate = Bot1.makeMoveWithStrate(flagPrint=True)     
             Bot2.MakeGameMove( move, flagPrint = False)
         else:
-            move = Bot2.MakeGameMove( flagPrint = False)
-            strate = Bot2.lastMoveStrate
+            move, strate = Bot2.makeMoveWithStrate(flagPrint=True)     
             Bot1.MakeGameMove( move, flagPrint = False)
         
+        print( f'{move}, {strate}' )
         history.append( ( move, strate) )
         status = Bot1.Status
         current_player = 3 - current_player
+        if Bot1.forcedWin :
+            return 1, history
+        if Bot2.forcedWin :
+            return 2, history
     
-    print( Bot1.quantPos)
-    print( Bot2.quantPos)
-
-
     return status, history
 
 def playGameAndSave( DataSet: DataSet, seed, rollout , depth):
     status, history = playGame(seed, rollout, depth)
     print( len(history))
-    print( [ it[0].col for it in history   ] )
     pos = Game()
+    insertPos = deepcopy(pos)
     currPlayer = 1
     for it in history:
         if status == 0:
-            DataSet.add( pos, it[1], 0)
+            DataSet.add( insertPos, it[1], 0)
         elif status == currPlayer:
-            DataSet.add( pos, it[1], 1)
+            DataSet.add( insertPos , it[1], 1)
         else:
-            DataSet.add( pos, it[1], -1)
+            DataSet.add( insertPos, it[1], -1)
         
         pos.get_and_MakeMove( it[0])
+        insertPos = deepcopy(pos)
         currPlayer = 3 - currPlayer
 
 
 DS = DataSet()
 
-for i in range(1):
-    playGameAndSave( DS, i, rollout = 1 , depth = 0)
+for i in range(5):
+    playGameAndSave( DS, i, rollout = 20 , depth = 2)
 
 DS.BuildDataSet()
 
+print( DS.len )
 print( len(DS.X) )
 
 DS.save( 'dataSet.pkl' )

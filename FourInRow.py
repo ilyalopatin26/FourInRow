@@ -90,7 +90,7 @@ class Game(absGame):
 
     
     def __hash__(self)  :
-        return hash( self.toNpArray().tobytes()  )
+        return hash( str(self.toNpArray())  )
     
     def __eq__(self, other) -> bool:
         return np.all(self.toNpArray() == other.toNpArray() )
