@@ -9,8 +9,9 @@ Set = DataSet()
 with open("dataSet.pkl", "rb") as f:
     Set = pickle.load(f)
 
-
-print( Set.X[4] )
-print( Set.Y[4] )
+n = 90
+print( Set.X[n] )
+print( Set.Y[n] )
+print( f'sum: { np.sum(Set.Y[n][1])}' )
 
 print( Set.len )

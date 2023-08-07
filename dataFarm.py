@@ -19,13 +19,13 @@ def playGame(seed, rollout , depth) :
         move = None
         strate = None
         if current_player == 1:
-            move, strate = Bot1.makeMoveWithStrate(flagPrint=True)     
+            move, strate = Bot1.makeMoveWithStrate(flagPrint=False)     
             Bot2.MakeGameMove( move, flagPrint = False)
         else:
-            move, strate = Bot2.makeMoveWithStrate(flagPrint=True)     
+            move, strate = Bot2.makeMoveWithStrate(flagPrint= False)     
             Bot1.MakeGameMove( move, flagPrint = False)
         
-        print( f'{move}, {strate}' )
+
         history.append( ( move, strate) )
         status = Bot1.Status
         current_player = 3 - current_player
@@ -57,8 +57,8 @@ def playGameAndSave( DataSet: DataSet, seed, rollout , depth):
 
 DS = DataSet()
 
-for i in range(5):
-    playGameAndSave( DS, i, rollout = 20 , depth = 2)
+while DS.len < 200 :
+    playGameAndSave( DS, 1 , rollout = 1 , depth = 1)
 
 DS.BuildDataSet()
 

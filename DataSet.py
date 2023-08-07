@@ -8,11 +8,12 @@ class DataObj:
     def __init__(self, res, moveStrate) -> None:
         self.res = res
         self.moveStrate = moveStrate
-        self.__alpha = 0.1
+        self.N = 1
     
     def update(self, moveStrate, res: int):
-        self.res  = (1-self.__alpha) * self.res + self.__alpha * res
-        self.moveStrate  = (1-self.__alpha) * self.moveStrate + self.__alpha * moveStrate
+        self.res  =  (self.N * self.res + res) / ( self.N + 1 )
+        self.moveStrate  =  (self.N * self.moveStrate +  moveStrate) / ( self.N + 1 )
+        self.N += 1
 
 class DataSet:
     def __init__(self) :

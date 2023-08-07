@@ -173,10 +173,10 @@ class  MC_TreeSearcher:
         
         bestN = -1
         candidate = []
-        Sum = 0
+        self.__lastMoveStrate = np.zeros(7)
         for move in validMoves:
             child = self.__currNode.getChild(move)
-            Sum += child.Visit
+            self.__lastMoveStrate[ move.col ] = child.Visit
             if flagPrint:
                 print(f"Move {move}: {child.Statistic}")
             if child.Visit > bestN:
@@ -188,10 +188,8 @@ class  MC_TreeSearcher:
         if flagPrint:
             print('\n')
         
-        for move in validMoves:
-            child = self.__currNode.getChild(move)
-            N = child.Visit
-            self.__lastMoveStrate[move.col] = N / Sum
+        S = np.sum( self.__lastMoveStrate )
+        self.__lastMoveStrate = self.__lastMoveStrate / S
 
         return random.choice(candidate)
     
